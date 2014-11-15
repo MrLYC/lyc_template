@@ -14,13 +14,13 @@ class Template(object):
 
     def __init__(self, template, default=None, ignorecase=True, tostr=str):
         self._template = self._QuoteRex.split(template)
-        self._defalut = default
+        self._default = default
         self._ignorecase = ignorecase
         self._tostr = tostr
 
     def get_var(self, var_name, model):
         """Get the var from model, if the var not found,
-        use self._defalut.
+        use self._default.
 
         Args:
             var_name: var quote name.
@@ -29,16 +29,16 @@ class Template(object):
         Return:
             var value as a string.
         """
-        target = model
         var_name = var_name.lower() if self._ignorecase else var_name
 
         for name in var_name.split(self.VarSeparator):
-            # var not found
-            if target is None:
-                target = self._defalut
+            if name in model:
+                model = model[name]
+            else:
+                target = self._default
                 break
-
-            target = target.get(name)
+        else:
+            target = model
 
         return self._tostr(target)
 
