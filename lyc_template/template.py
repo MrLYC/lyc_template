@@ -15,6 +15,7 @@ class Template(object):
     def __init__(self, template, default=None, ignorecase=True, tostr=str):
         self._template = self._QuoteRex.split(template)
         self._default = default
+        self.use_default = True
         self._ignorecase = ignorecase
         self._tostr = tostr
 
@@ -28,15 +29,21 @@ class Template(object):
 
         Return:
             var value as a string.
+
+        Exception:
+            KeyError: when self.use_default is False and
+                try to get a not existed var.
         """
         var_name = var_name.lower() if self._ignorecase else var_name
 
         for name in var_name.split(self.VarSeparator):
             if name in model:
                 model = model[name]
-            else:
+            elif self.use_default:
                 target = self._default
                 break
+            else:
+                raise KeyError("%s not found", var_name)
         else:
             target = model
 
